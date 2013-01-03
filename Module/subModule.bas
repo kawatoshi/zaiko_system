@@ -702,6 +702,9 @@ Function SheetUnvisible() As String
     Dim i As Long
     Dim varsheetname As Variant
     
+    If ThisWorkbook.Path Like "*honbu*" Then
+        Exit Function
+    End If
     varsheetname = Range("ALL_PROTECT")
     For i = 1 To UBound(varsheetname)
         Sheets(varsheetname(i, 1)).Visible = False
