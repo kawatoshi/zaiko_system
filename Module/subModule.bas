@@ -713,7 +713,9 @@ Function SheetUnvisible() As String
         For i = 1 To UBound(varsheetname)
         Sheets(varsheetname(i, 1)).Visible = False
     Next
-
+    On Error Resume Next
+        Sheets("メイン").Select
+    On Error GoTo 0
 End Function
 Sub SheetUnprotect(shtUnprotect As Worksheet)
 'シートをアンプロテクトする
