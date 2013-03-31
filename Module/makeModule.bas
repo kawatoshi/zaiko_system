@@ -454,7 +454,11 @@ Sub makeAccaunts(data() As TenantAccaunts, settle_date As Date, strSheetName As 
     Const SubtotalRows As Long = 3
     
     Set shtMy = Sheets("åàçœçœ")
+    On Error Resume Next
     Set shtAccaunt = Sheets(strSheetName)
+    If Err.number <> 0 Then GoTo ending
+    On Error GoTo 0
+
     
     ReDim accaunt(0)
     Call SheetUnprotect(shtAccaunt)
