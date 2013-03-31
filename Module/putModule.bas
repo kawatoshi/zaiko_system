@@ -415,13 +415,23 @@ ending:
     Set shtMy = Nothing
 End Function
 
-Function putTenantAccaunt(rngFind As Range, TenantAccauntData As TenantAccaunts) As String
+Function putTenantAccaunt(rngFind As Range, TenantAccauntData As TenantAccaunts, Optional type_of_price As String = "sum") As String
     Dim shtMy As Worksheet
+    Dim lngPrice As Long
+    Dim lngSum As Long
 
     On Error Resume Next
     Set shtMy = ActiveWorkbook.Sheets("ÉeÉiÉìÉgêøãÅì‡ñÛ")
     If Err.number <> 0 Then putTenantAccaunt = "sheetERROR": GoTo ending
     On Error GoTo 0
+    Select Case type_of_price
+    Case "sum"
+        lngPrice = TenantAccauntData.price
+        lngSum = TenantAccauntData.sum
+    Case "cost"
+        lngPrice = TenantAccauntData.cost
+        lngSum = lngPrice * TenantAccauntData.number
+    End Select
     rngFind.Cells(1, TenantAccaunts_delivery_date_COL).Value = TenantAccauntData.delivery_date
     rngFind.Cells(1, TenantAccaunts_tenant_code_COL).Value = TenantAccauntData.tenant_code
     rngFind.Cells(1, TenantAccaunts_floor_COL).Value = TenantAccauntData.floor
@@ -429,9 +439,9 @@ Function putTenantAccaunt(rngFind As Range, TenantAccauntData As TenantAccaunts)
     rngFind.Cells(1, TenantAccaunts_maker_COL).Value = TenantAccauntData.maker
     rngFind.Cells(1, TenantAccaunts_item_name_COL).Value = TenantAccauntData.item_name
     rngFind.Cells(1, TenantAccaunts_product_name_COL).Value = TenantAccauntData.product_name
-    rngFind.Cells(1, TenantAccaunts_price_COL).Value = TenantAccauntData.price
+    rngFind.Cells(1, TenantAccaunts_price_COL).Value = lngPrice
     rngFind.Cells(1, TenantAccaunts_number_COL).Value = TenantAccauntData.number
-    rngFind.Cells(1, TenantAccaunts_sum_COL).Value = TenantAccauntData.sum
+    rngFind.Cells(1, TenantAccaunts_sum_COL).Value = lngSum
     putTenantAccaunt = "OK"
 ending:
     Set shtMy = Nothing
