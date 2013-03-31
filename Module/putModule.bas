@@ -29,12 +29,18 @@ Sub putTenantAccauntsSubTotal(price As Long, sum As SumList, putRange As Range)
 End Sub
 Sub putTenantAccaunts(accaunt() As TenantAccaunts, _
                       price As Long, _
-                      putRange As Range)
+                      putRange As Range, _
+                      Optional price_type As String = "sum")
     Dim k As Long
     
     price = 0
     For k = 0 To UBound(accaunt)
-        price = price + accaunt(k).sum
+        Select Case price_type
+        Case "sum"
+            price = price + accaunt(k).sum
+        Case "cost"
+            price = price + (accaunt(k).cost * accaunt(k).number)
+        End Select
         Call putTenantAccaunt(putRange, accaunt(k))
         Set putRange = putRange.Offset(1, 0)
     Next
