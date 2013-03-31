@@ -41,7 +41,7 @@ Sub putTenantAccaunts(accaunt() As TenantAccaunts, _
         Case "cost"
             price = price + (accaunt(k).cost * accaunt(k).number)
         End Select
-        Call putTenantAccaunt(putRange, accaunt(k))
+        Call putTenantAccaunt(putRange, accaunt(k), price_type)
         Set putRange = putRange.Offset(1, 0)
     Next
 End Sub
