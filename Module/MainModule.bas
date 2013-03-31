@@ -1,6 +1,6 @@
 Attribute VB_Name = "MainModule"
 Option Explicit
-Public Const strVer As String = "消耗品管理システム" & vbCrLf & "ver1.724"
+Public Const strVer As String = "消耗品管理システム" & vbCrLf & "ver1.800"
 Public Const DataBaseName As String = "z_system_data*"
 
 Public JAN_CODE As String
