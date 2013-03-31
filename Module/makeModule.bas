@@ -438,6 +438,86 @@ ending:
     Set shtAccaunt = Nothing
     Set shtMy = Nothing
 End Sub
+Sub makeAccaunts(data() As TenantAccaunts, settle_date As Date, strSheetName As String)
+'請求書内訳を作成する
+    Dim shtMy As Worksheet
+    Dim shtAccaunt As Worksheet
+    Dim i As Long, j As Long, k As Long
+    Dim rngMy As Range
+    Dim rngSum As Range
+    Dim t_code As String
+    Dim sum As SumList
+    Dim accaunt() As TenantAccaunts
+    Dim price As Long
+    Dim rngSubtotal As Range
+    Dim lngColumn As Long
+    Const SubtotalRows As Long = 3
+    
+    Set shtMy = Sheets("決済済")
+    Set shtAccaunt = Sheets(strSheetName)
+    
+    ReDim accaunt(0)
+    Call SheetUnprotect(shtAccaunt)
+    Call clearList(shtAccaunt)
+    Set rngMy = shtAccaunt.Cells(getEndRow("a:z", shtAccaunt) + 1, 1)
+    Set rngSum = shtAccaunt.Cells(getEndRow("a:z", shtAccaunt) + 1, TenantAccaunts_sum_COL)
+    t_code = data(0).tenant_code
+    j = 0
+    '最後のテナントデータをelse節で処理させるための配列拡張
+    ReDim Preserve data(UBound(data) + 1)
+    For i = 0 To UBound(data)
+        If t_code Like data(i).tenant_code Then
+            Call addTenantAccauntData(data(i), accaunt(), j)
+        Else
+            'テナントデータ整列、書き込み
+            ReDim Preserve accaunt(j - 1)
+            Call TenantAccauntSort(accaunt, LBound(accaunt), UBound(accaunt))
+            Call putTenantAccaunts(accaunt, price, rngMy, "cost")
+            Debug.Print accaunt(0).tenant_code & " : " & UBound(accaunt) + 1
+            '小計書き込み
+            Call putTenantAccauntsSubTotal(price, sum, rngMy)
+            t_code = data(i).tenant_code
+            j = 0
+            ReDim accaunt(j)
+            Call addTenantAccauntData(data(i), accaunt(), j)
+        End If
+    Next
+    Call putTATotal(sum.price_without_tax, sum.tax, sum.price, rngMy)
+    
+    Set rngMy = shtAccaunt.Range(shtAccaunt.Cells(DATA_START_ROW, 1), _
+                                 shtAccaunt.Cells(getEndRow("a:z", shtAccaunt), TenantAccaunts_sum_COL)).Offset(-1, 0)
+    Set rngMy = rngMy.Resize(rngMy.rows.Count + 1, rngMy.Columns.Count)
+    '表題日付書き込み
+    With shtAccaunt
+        .Range("a2").Value = getClosingdate(settle_date)
+        .Range("b4").Value = Range("OFFICE_NAME")
+    End With
+    '印刷用書式設定
+    Call standerdPrintSetUp(shtAccaunt)
+    Call PrintFormatBill(rngMy, SubtotalRows)
+    '小計ライン作成
+    Set rngSubtotal = rngMy.Resize(1, TenantAccaunts_sum_COL)
+    lngColumn = rngSubtotal.Count
+    For i = 2 To rngMy.rows.Count
+        If rngSubtotal.Cells(1).Value Like "" And Not rngSubtotal.Cells(lngColumn) = "" Then
+            Call drowSubtotalLine(rngSubtotal.Resize(SubtotalRows, lngColumn))
+            Set rngSubtotal = rngSubtotal.Offset(SubtotalRows, 0)
+            i = i + SubtotalRows - 1
+        Else
+            Set rngSubtotal = rngSubtotal.Offset(1, 0)
+        End If
+    Next
+    With shtAccaunt
+        .Visible = xlSheetVisible
+        Call WindowFreezePanes(shtAccaunt, .Range("a6"))
+    End With
+ending:
+    Call SheetProtect
+    Set rngSum = Nothing
+    Set rngMy = Nothing
+    Set shtAccaunt = Nothing
+    Set shtMy = Nothing
+End Sub
 Sub MakeDeliveryAccount2(data() As DeliveryAccount, BillDate As Date)
 '丸広請求内訳を作成する
     Dim AccountIds As String

@@ -1286,6 +1286,18 @@ Sub MonthDegreeProcessP2(MaruhiroP As Boolean, _
         ReDim ta(0)
     End If
     
+    '¿‹‘“à–ó‚ğì¬‚·‚é
+    If postSettleItemsToTenantAccaunt(ta, settle_item, "¿‹‘") = True Then
+        Call makeAccaunts(ta, settle_item(0).settle_date, "¿‹‘“à–ó")
+'        Set mySht = Sheets("¿‹‘“à–ó")
+'        If TenantP = True Then
+'            Call PrintPage(strState, mySht)
+'        End If
+    Else
+        MsgBox "¿‹‘“à–ó‚Í‚ ‚è‚Ü‚¹‚ñ"
+        ReDim ta(0)
+    End If
+    
     '¿‹‹àŠzˆê——‚ğì¬‚·‚é
     ta_is_null = True
     If postSettleItemsToTenantAccaunt(ta, settle_item, "ƒeƒiƒ“ƒgTœ") = True Then
